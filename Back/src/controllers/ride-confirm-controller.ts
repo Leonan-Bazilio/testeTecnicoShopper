@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
-import { rideEstimateService } from "../services/ride-estimate-service";
+import { confirmRideService } from "../services/ride-confirm-service";
 import CustomErrorDTO from "../errors/custom-error-DTO";
-import { ResEstimate } from "../types/ride-estimate-types";
 
-export const rideEstimateController = async (
+export const confirmRideController = async (
   req: Request,
   res: Response
 ): Promise<any> => {
-  const data = req.body;
   try {
-    const estimate: ResEstimate = await rideEstimateService(data);
-    return res.status(200).json(estimate);
+    const rideData = req.body;
+
+    const result = await confirmRideService(rideData);
+
+    return res.status(200).json({ success: true });
   } catch (error: any) {
     if (error instanceof CustomErrorDTO) {
       return res.status(error.statusCode).json({

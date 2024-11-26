@@ -1,4 +1,4 @@
-export default interface DriverDTO {
+export type Driver = {
   id: number;
   name: string;
   description: string;
@@ -9,4 +9,4 @@ export default interface DriverDTO {
   };
   ratePerKmInCent: number;
   minDistanceInKm: number;
-}
+};

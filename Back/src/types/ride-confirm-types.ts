@@ -1,7 +1,5 @@
-export default interface RideHistoryDTO {
-  id: number;
+export type ReqConfirmRide = {
   customer_id: string;
-  date: Date;
   origin: string;
   destination: string;
   distance: number;
@@ -11,4 +9,4 @@ export default interface RideHistoryDTO {
     name: string;
   };
   value: number;
-}
+};

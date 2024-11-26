@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { rideEstimateController } from "../controllers/ride-estimate-controller";
-import { confirmRideController } from "../controllers/confirm-ride-controller";
-import { getRidesController } from "../controllers/ride-controller";
+import { confirmRideController } from "../controllers/ride-confirm-controller";
+import { getRidesController } from "../controllers/ride-history-controller";
 
 const router = Router();
 

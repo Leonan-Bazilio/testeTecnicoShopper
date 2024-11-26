@@ -1,25 +1,34 @@
-import axios from "axios";
-import ReqEstimateDTO from "../dtos/req-estimate-DTO";
-import ResApiGoogleDTO from "../dtos/res-api-google-DTO";
 import path from "path";
 import { readFileSync } from "fs";
-import DriverDTO from "../dtos/driver-DTO";
-import CustomErrorDTO from "../dtos/errors/custom-error-DTO";
+import CustomErrorDTO from "../errors/custom-error-DTO";
+import fetchApiRoutes from "../repositories/google-api-repository";
+import {
+  FormattedDriver,
+  ReqEstimate,
+  ResEstimate,
+} from "../types/ride-estimate-types";
+import { Driver } from "../types/driver-type";
 
 export const rideEstimateService = async (
-  data: ReqEstimateDTO
-): Promise<ResApiGoogleDTO> => {
+  data: ReqEstimate
+): Promise<ResEstimate> => {
   const { origin, destination, customer_id } = data;
 
   if (!origin) {
-    throw new CustomErrorDTO("INVALID_DATA", "The 'origin' field is required.");
+    throw new CustomErrorDTO(
+      400,
+      "INVALID_DATA",
+      "The 'origin' field is required."
+    );
   } else if (!destination) {
     throw new CustomErrorDTO(
+      400,
       "INVALID_DATA",
       "The 'destination' field is required."
     );
   } else if (!customer_id) {
     throw new CustomErrorDTO(
+      400,
       "INVALID_DATA",
       "The 'customer_id' field is required."
     );
@@ -27,44 +36,39 @@ export const rideEstimateService = async (
 
   if (origin === destination) {
     throw new CustomErrorDTO(
+      400,
       "INVALID_DATA",
       "The origin and destination addresses cannot be the same."
     );
   }
 
+  let response;
   try {
-    const response = await axios.post(
-      "https://routes.googleapis.com/directions/v2:computeRoutes",
-      {
-        origin: { address: origin },
-        destination: { address: destination },
-        travelMode: "DRIVE",
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": process.env.GOOGLE_API_KEY,
-          "X-Goog-FieldMask":
-            "routes.legs.startLocation.latLng,routes.legs.endLocation.latLng,routes.legs.distanceMeters,routes.legs.duration",
-        },
-      }
+    response = await fetchApiRoutes(origin, destination);
+  } catch (error) {
+    throw new Error("Error calling the API");
+  }
+  const responseData = response.data.routes[0].legs[0];
+
+  const distance: number = responseData.distanceMeters;
+  const distanceInKm: number = distance / 1000;
+  const duration: string = responseData.duration;
+
+  const filePath = path.resolve(__dirname, "../data/drivers.json");
+  const fileContents = readFileSync(filePath, "utf-8");
+  const drivers: Driver[] = JSON.parse(fileContents);
+
+  const availableDrivers = drivers.filter(
+    (driver) => distanceInKm >= driver.minDistanceInKm
+  );
+  if (availableDrivers.length === 0) {
+    throw new Error(
+      "No drivers are available for this trip because the requested distance does not meet the minimum requirement."
     );
+  }
 
-    const responseData = response.data.routes[0].legs[0];
-
-    const distance: number = responseData.distanceMeters;
-    const distanceInKm: number = distance / 1000;
-    const duration: string = responseData.duration;
-
-    const filePath = path.resolve(__dirname, "../data/drivers.json");
-    const fileContents = readFileSync(filePath, "utf-8");
-    const drivers = JSON.parse(fileContents);
-
-    const availableDrivers = drivers.filter(
-      (driver: DriverDTO) => distanceInKm >= driver.minDistanceInKm
-    );
-
-    const formatedDrivers = availableDrivers.map((driver: DriverDTO) => ({
+  const formattedDrivers: FormattedDriver[] = availableDrivers.map(
+    (driver: Driver) => ({
       id: driver.id,
       name: driver.name,
       description: driver.description,
@@ -74,30 +78,22 @@ export const rideEstimateService = async (
         comment: driver.review.comment,
       },
       value: distanceInKm * driver.ratePerKmInCent,
-    }));
+    })
+  );
 
-    console.log("aaaaa", formatedDrivers);
-    const result: ResApiGoogleDTO = {
-      origin: {
-        latitude: responseData.startLocation.latLng.latitude,
-        longitude: responseData.startLocation.latLng.longitude,
-      },
-      destination: {
-        latitude: responseData.endLocation.latLng.latitude,
-        longitude: responseData.endLocation.latLng.longitude,
-      },
-      distance: distance,
-      duration: duration,
-      options: formatedDrivers,
-      routeResponse: responseData,
-    };
-
-    return result;
-  } catch (error: any) {
-    console.error(
-      "Erro ao obter dados da rota:",
-      error.response?.data || error.message
-    );
-    throw new Error("Não foi possível calcular a rota");
-  }
+  formattedDrivers.sort((a, b) => a.value - b.value);
+  return {
+    origin: {
+      latitude: responseData.startLocation.latLng.latitude,
+      longitude: responseData.startLocation.latLng.longitude,
+    },
+    destination: {
+      latitude: responseData.endLocation.latLng.latitude,
+      longitude: responseData.endLocation.latLng.longitude,
+    },
+    distance: distance,
+    duration: duration,
+    options: formattedDrivers,
+    routeResponse: responseData,
+  };
 };
