@@ -144,7 +144,7 @@ const RideHistory: React.FC = () => {
                     <strong>Tempo:</strong> {ride.duration}
                   </div>
                   <div>
-                    <strong>Valor:</strong> R${ride.value.toFixed(2)}
+                    <strong>Valor:</strong> R${(ride.value/100).toFixed(2)}
                   </div>
                 </li>
               ))}

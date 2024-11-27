@@ -1,15 +1,5 @@
+version: '3.8'
 services:
-  backend:
-    build:
-      context: ./Back
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - NODE_ENV=production
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-    restart: unless-stopped
-
   frontend:
     build:
       context: ./front
@@ -17,6 +7,22 @@ services:
     ports:
       - "80:80"
     environment:
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY} # Variável de ambiente
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      - ./front/src:/app/src  # Mapeando a pasta src do frontend para o container
+      - ./front/public:/app/public  # Mapeando a pasta public para o container
+      - /app/node_modules  # Não mapear os node_modules (vai usar os do container)
     depends_on:
       - backend
+
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      - ./back/src:/app/src  # Mapeando a pasta src do backend para o container
+      - /app/node_modules  # Não mapear os node_modules (vai usar os do container)
