@@ -1,9 +1,8 @@
-import path from "path";
-import { readFileSync, writeFileSync } from "fs";
 import CustomErrorDTO from "../errors/custom-error-DTO";
-import { RideHistory } from "../types/ride-history-types";
 import { ReqConfirmRide } from "../types/ride-confirm-types";
 import { Driver } from "../types/driver-type";
+import { getAllDrivers } from "./driver-service";
+import RideHistoryModel, { IRideHistory } from "../models/ride-history";
 
 export const confirmRideService = async (
   rideData: ReqConfirmRide
@@ -43,9 +42,12 @@ export const confirmRideService = async (
       "The origin and destination addresses cannot be the same."
     );
   }
-  const driversFilePath = path.resolve(__dirname, "../data/drivers.json");
-  const fileContents = readFileSync(driversFilePath, "utf-8");
-  const drivers: Driver[] = JSON.parse(fileContents);
+  let drivers: Driver[] = [];
+  try {
+    drivers = await getAllDrivers();
+  } catch (error) {
+    throw new Error("Error while fetching drivers:");
+  }
 
   const driverExists = drivers.find((eachDriver) => {
     return driver.id === eachDriver.id;
@@ -68,25 +70,16 @@ export const confirmRideService = async (
       } km is required.`
     );
   }
-  const ridesFilePath = path.resolve(__dirname, "../data/ridesData.json");
-  let rides: RideHistory[] = [];
-  try {
-    const ridesFileContents = readFileSync(ridesFilePath, "utf-8");
-    rides = JSON.parse(ridesFileContents);
-  } catch (error) {
-    throw new Error("Error reading the rides data file.");
-  }
-  const newRideData: RideHistory = {
-    id: Math.round(Math.random() * 1000),
+
+  const newRideData: IRideHistory = new RideHistoryModel({
     date: new Date(),
     ...rideData,
-  };
-  console.log("AAAAAAAAA", newRideData);
-  rides.push(newRideData);
+  });
 
+  console.log("ZZZZZZZZZ", newRideData);
   try {
-    writeFileSync(ridesFilePath, JSON.stringify(rides), "utf-8");
-  } catch (err) {
-    throw new Error("Error saving the rides data file.");
+    await newRideData.save();
+  } catch (error) {
+    throw new Error("Error while saving rides:");
   }
 };

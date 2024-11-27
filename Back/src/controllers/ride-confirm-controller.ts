@@ -19,7 +19,7 @@ export const confirmRideController = async (
         error_description: error.errorDescription,
       });
     } else {
-      return res.status(500).json(error);
+      return res.status(500).json(error.message);
     }
   }
 };

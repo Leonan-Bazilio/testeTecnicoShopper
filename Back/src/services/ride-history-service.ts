@@ -1,7 +1,7 @@
-import path from "path";
-import { readFileSync } from "fs";
 import CustomErrorDTO from "../errors/custom-error-DTO";
-import { ResRidesHistory, RideHistory } from "../types/ride-history-types";
+import { IRideHistory } from "../models/ride-history";
+import { ResRidesHistory } from "../types/ride-history-types";
+import { getAllRideHistories } from "./history-service";
 
 export const getRidesService = async (
   customer_id: string,
@@ -15,14 +15,9 @@ export const getRidesService = async (
     );
   }
 
-  const ridesHistoryFilePath = path.resolve(
-    __dirname,
-    "../data/ridesData.json"
-  );
-  let ridesHistory: RideHistory[];
+  let ridesHistory: IRideHistory[] = [];
   try {
-    const historyFileContents = readFileSync(ridesHistoryFilePath, "utf-8");
-    ridesHistory = JSON.parse(historyFileContents);
+    ridesHistory = await getAllRideHistories();
   } catch (error) {
     throw new Error("Error reading the rides data file.");
   }
@@ -41,6 +36,7 @@ export const getRidesService = async (
       );
     }
   }
+
   if (ridesHistory.length === 0) {
     throw new CustomErrorDTO(
       404,
@@ -51,14 +47,26 @@ export const getRidesService = async (
 
   ridesHistory.sort((a, b) => {
     const dateA = new Date(a.date).getTime();
-
     const dateB = new Date(b.date).getTime();
     return dateB - dateA;
   });
 
-  const history = {
+  const history: ResRidesHistory = {
     customer_id: customer_id,
-    rides: ridesHistory,
+    rides: ridesHistory.map((ride) => ({
+      id: ride.id,
+      date: ride.date,
+      origin: ride.origin,
+      destination: ride.destination,
+      distance: ride.distance,
+      duration: ride.duration,
+      driver: {
+        id: ride.driver.id,
+        name: ride.driver.name,
+      },
+      value: ride.value,
+    })),
   };
+
   return history;
 };

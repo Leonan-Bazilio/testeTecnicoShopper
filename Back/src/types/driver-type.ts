@@ -4,7 +4,7 @@ export type Driver = {
   description: string;
   vehicle: string;
   review: {
-    rating: string;
+    rating: number;
     comment: string;
   };
   ratePerKmInCent: number;

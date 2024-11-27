@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import styles from "./RideForm.module.css";
 
 const RideForm: React.FC = () => {
   const [customerId, setCustomerId] = useState("");
@@ -40,13 +41,12 @@ const RideForm: React.FC = () => {
       state,
       postalCode,
       country,
-    ].filter(Boolean); 
+    ].filter(Boolean);
     return addressParts.join(", ");
   };
 
   const handleEstimate = async () => {
     try {
-     
       const origin = formatAddress(
         originStreet,
         originNumber,
@@ -84,90 +84,119 @@ const RideForm: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Solicitar Viagem</h1>
+    <div className={styles.background}>
+      <div className={styles.container}>
+        <h1>Simulador de viagem</h1>
+        <div className={styles.divIdUser}>
+          <input
+            placeholder="ID do Usuário"
+            value={customerId}
+            onChange={(e) => setCustomerId(e.target.value)}
+          />
+        </div>
 
-      <input
-        placeholder="ID do Usuário"
-        value={customerId}
-        onChange={(e) => setCustomerId(e.target.value)}
-      />
+        <h2>Origem</h2>
+        <div className={styles.inputGroup}>
+          <div className={styles.line1}>
+            <input
+              className={styles.street}
+              placeholder="Rua"
+              value={originStreet}
+              onChange={(e) => setOriginStreet(e.target.value)}
+            />
+            <input
+              className={styles.number}
+              placeholder="Número"
+              value={originNumber}
+              onChange={(e) => setOriginNumber(e.target.value)}
+            />
+            <input
+              className={styles.neighborhood}
+              placeholder="Bairro"
+              value={originNeighborhood}
+              onChange={(e) => setOriginNeighborhood(e.target.value)}
+            />
+          </div>
+          <div className={styles.line2}>
+            <input
+              className={styles.city}
+              placeholder="Cidade"
+              value={originCity}
+              onChange={(e) => setOriginCity(e.target.value)}
+            />
+            <input
+              className={styles.state}
+              placeholder="Estado"
+              value={originState}
+              onChange={(e) => setOriginState(e.target.value)}
+            />
+            <input
+              className={styles.postalCode}
+              placeholder="CEP"
+              value={originPostalCode}
+              onChange={(e) => setOriginPostalCode(e.target.value)}
+            />
+            <input
+              className={styles.country}
+              placeholder="País"
+              value={originCountry}
+              onChange={(e) => setOriginCountry(e.target.value)}
+            />
+          </div>
+        </div>
 
-      <h2>Origem</h2>
-      <input
-        placeholder="Rua"
-        value={originStreet}
-        onChange={(e) => setOriginStreet(e.target.value)}
-      />
-      <input
-        placeholder="Número"
-        value={originNumber}
-        onChange={(e) => setOriginNumber(e.target.value)}
-      />
-      <input
-        placeholder="Bairro"
-        value={originNeighborhood}
-        onChange={(e) => setOriginNeighborhood(e.target.value)}
-      />
-      <input
-        placeholder="Cidade"
-        value={originCity}
-        onChange={(e) => setOriginCity(e.target.value)}
-      />
-      <input
-        placeholder="Estado"
-        value={originState}
-        onChange={(e) => setOriginState(e.target.value)}
-      />
-      <input
-        placeholder="CEP"
-        value={originPostalCode}
-        onChange={(e) => setOriginPostalCode(e.target.value)}
-      />
-      <input
-        placeholder="País"
-        value={originCountry}
-        onChange={(e) => setOriginCountry(e.target.value)}
-      />
+        <h2>Destino</h2>
+        <div className={styles.inputGroup}>
+          <div className={styles.line1}>
+            <input
+              className={styles.street}
+              placeholder="Rua"
+              value={destinationStreet}
+              onChange={(e) => setDestinationStreet(e.target.value)}
+            />
+            <input
+              className={styles.number}
+              placeholder="Número"
+              value={destinationNumber}
+              onChange={(e) => setDestinationNumber(e.target.value)}
+            />
+            <input
+              className={styles.neighborhood}
+              placeholder="Bairro"
+              value={destinationNeighborhood}
+              onChange={(e) => setDestinationNeighborhood(e.target.value)}
+            />
+          </div>
+          <div className={styles.line2}>
+            <input
+              className={styles.city}
+              placeholder="Cidade"
+              value={destinationCity}
+              onChange={(e) => setDestinationCity(e.target.value)}
+            />
+            <input
+              className={styles.state}
+              placeholder="Estado"
+              value={destinationState}
+              onChange={(e) => setDestinationState(e.target.value)}
+            />
+            <input
+              className={styles.postalCode}
+              placeholder="CEP"
+              value={destinationPostalCode}
+              onChange={(e) => setDestinationPostalCode(e.target.value)}
+            />
+            <input
+              className={styles.country}
+              placeholder="País"
+              value={destinationCountry}
+              onChange={(e) => setDestinationCountry(e.target.value)}
+            />
+          </div>
+        </div>
 
-      <h2>Destino</h2>
-      <input
-        placeholder="Rua"
-        value={destinationStreet}
-        onChange={(e) => setDestinationStreet(e.target.value)}
-      />
-      <input
-        placeholder="Número"
-        value={destinationNumber}
-        onChange={(e) => setDestinationNumber(e.target.value)}
-      />
-      <input
-        placeholder="Bairro"
-        value={destinationNeighborhood}
-        onChange={(e) => setDestinationNeighborhood(e.target.value)}
-      />
-      <input
-        placeholder="Cidade"
-        value={destinationCity}
-        onChange={(e) => setDestinationCity(e.target.value)}
-      />
-      <input
-        placeholder="Estado"
-        value={destinationState}
-        onChange={(e) => setDestinationState(e.target.value)}
-      />
-      <input
-        placeholder="CEP"
-        value={destinationPostalCode}
-        onChange={(e) => setDestinationPostalCode(e.target.value)}
-      />
-      <input
-        placeholder="País"
-        value={destinationCountry}
-        onChange={(e) => setDestinationCountry(e.target.value)}
-      />
-
-      <button onClick={handleEstimate}>Estimar Viagem</button>
+        <button onClick={handleEstimate}>Estimar Viagem</button>
+      </div>
     </div>
   );
 };

@@ -73,10 +73,7 @@ const RideHistory: React.FC = () => {
       );
       setRides(response.data.rides.rides);
       extractDriversFromRides(response.data.rides.rides);
-      console.log("bbbb", response.data.rides.rides);
-      console.log("ccccc", rides);
       setDriverId("all");
-      console.log("dddddddddd", filteredRides);
     } catch (error: any) {
       console.error("Erro ao buscar histórico de viagens:", error);
       alert("Erro ao buscar histórico de viagens.");
@@ -84,7 +81,6 @@ const RideHistory: React.FC = () => {
   };
 
   const handleFilter = () => {
-    console.log("aaaaaaa", customerId);
     fetchRides();
   };
 

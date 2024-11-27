@@ -1,5 +1,3 @@
-import path from "path";
-import { readFileSync } from "fs";
 import CustomErrorDTO from "../errors/custom-error-DTO";
 import fetchApiRoutes from "../repositories/google-api-repository";
 import {
@@ -8,6 +6,7 @@ import {
   ResEstimate,
 } from "../types/ride-estimate-types";
 import { Driver } from "../types/driver-type";
+import { getAllDrivers } from "./driver-service";
 
 export const rideEstimateService = async (
   data: ReqEstimate
@@ -54,9 +53,12 @@ export const rideEstimateService = async (
   const distanceInKm: number = distance / 1000;
   const duration: string = responseData.duration;
 
-  const filePath = path.resolve(__dirname, "../data/drivers.json");
-  const fileContents = readFileSync(filePath, "utf-8");
-  const drivers: Driver[] = JSON.parse(fileContents);
+  let drivers: Driver[] = [];
+  try {
+    drivers = await getAllDrivers();
+  } catch (error) {
+    throw new Error("Error while fetching drivers:");
+  }
 
   const availableDrivers = drivers.filter(
     (driver) => distanceInKm >= driver.minDistanceInKm
@@ -74,7 +76,7 @@ export const rideEstimateService = async (
       description: driver.description,
       vehicle: driver.vehicle,
       review: {
-        rating: parseFloat(driver.review.rating), // Converte a string para número
+        rating: driver.review.rating,
         comment: driver.review.comment,
       },
       value: distanceInKm * driver.ratePerKmInCent,
