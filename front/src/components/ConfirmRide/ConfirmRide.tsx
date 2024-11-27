@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import styles from "./ConfirmRide.module.css";
 
 const ConfirmRide: React.FC = () => {
   const { state } = useLocation();
@@ -51,45 +52,44 @@ const ConfirmRide: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Confirmar Viagem</h1>
-      <div>
-        <h2>Mapa da Rota</h2>
-        <img src={generateMapUrl()} alt="Mapa da rota" />
-      </div>
-      <div>
-        <h2>Opções de Motoristas</h2>
-        {rideData.options.map((option: any) => (
-          <div
-            key={option.id}
-            style={{
-              border: "1px solid #ccc",
-              margin: "10px",
-              padding: "10px",
-            }}
-          >
-            <h3>{option.name}</h3>
-            <p>{option.description}</p>
-            <p>
-              <strong>Veículo:</strong> {option.vehicle}
-            </p>
-            <p>
-              <strong>Avaliação:</strong> {option.review.rating} estrelas
-            </p>
-            <p>
-              <strong>Comentário:</strong> {option.review.comment}
-            </p>
-            <p>
-              <strong>Valor:</strong> R$ {(option.value / 100).toFixed(2)}
-            </p>
-            <button
-              onClick={() => handleConfirmRide(option)}
-              disabled={loading}
-            >
-              Escolher
-            </button>
+    <div className={styles.background}>
+      <div className={styles.container}>
+        <h1>Confirmar Viagem</h1>
+        <div className={styles.divMap}>
+          <h2>Mapa da Rota</h2>
+          <img src={generateMapUrl()} alt="Mapa da rota" />
+        </div>
+
+        <div className={styles.driverOptions}>
+          <h2>Opções de Motoristas</h2>
+          {rideData.options.map((option: any) => (
+            <div key={option.id} className={styles.driverOption}>
+              <h3>{option.name}</h3>
+              <p>{option.description}</p>
+              <p>
+                <strong>Veículo:</strong> {option.vehicle}
+              </p>
+              <p>
+                <strong>Avaliação:</strong> {option.review.rating} estrelas
+              </p>
+              <p>
+                <strong>Comentário:</strong> {option.review.comment}
+              </p>
+              <p>
+                <strong>Valor:</strong> R$ {(option.value / 100).toFixed(2)}
+              </p>
+              <button onClick={() => handleConfirmRide(option)} disabled={loading}>
+                Escolher
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {loading && (
+          <div className={styles.loadingSpinner}>
+            <span>Confirmando a viagem...</span>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
