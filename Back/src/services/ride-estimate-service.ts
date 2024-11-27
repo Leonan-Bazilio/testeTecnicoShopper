@@ -5,8 +5,7 @@ import {
   ReqEstimate,
   ResEstimate,
 } from "../types/ride-estimate-types";
-import { Driver } from "../types/driver-type";
-import { getAllDrivers } from "./driver-service";
+import DriverModel, { IDriver } from "../models/driver";
 
 export const rideEstimateService = async (
   data: ReqEstimate
@@ -53,9 +52,9 @@ export const rideEstimateService = async (
   const distanceInKm: number = distance / 1000;
   const duration: string = responseData.duration;
 
-  let drivers: Driver[] = [];
+  let drivers: IDriver[] = [];
   try {
-    drivers = await getAllDrivers();
+    drivers = await DriverModel.find();
   } catch (error) {
     throw new Error("Error while fetching drivers:");
   }
@@ -70,7 +69,7 @@ export const rideEstimateService = async (
   }
 
   const formattedDrivers: FormattedDriver[] = availableDrivers.map(
-    (driver: Driver) => ({
+    (driver: IDriver) => ({
       id: driver.id,
       name: driver.name,
       description: driver.description,

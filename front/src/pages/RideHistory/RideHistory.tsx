@@ -27,8 +27,8 @@ interface RideHistoryData {
 
 const RideHistory: React.FC = () => {
   const { state } = useLocation();
-  const { customer_id } = state;
-  const [customerId, setCustomerId] = useState<string>(customer_id);
+  const customer_id = state?.customer_id || "";
+  const [customerId, setCustomerId] = useState<string>(customer_id || "");
   const [driverId, setDriverId] = useState<number | string>("all");
   const [rides, setRides] = useState<Ride[]>([]);
   const [filteredRides, setFilteredRides] = useState<Ride[]>([]);

@@ -1,14 +1,13 @@
 import CustomErrorDTO from "../errors/custom-error-DTO";
 import { ReqConfirmRide } from "../types/ride-confirm-types";
-import { Driver } from "../types/driver-type";
-import { getAllDrivers } from "./driver-service";
+import DriverModel, { IDriver } from "../models/driver";
 import RideHistoryModel, { IRideHistory } from "../models/ride-history";
 
 export const confirmRideService = async (
   rideData: ReqConfirmRide
 ): Promise<void> => {
   const { origin, destination, customer_id, driver, distance } = rideData;
-
+  console.log("aaaaaaaaa", rideData);
   if (!origin) {
     throw new CustomErrorDTO(
       400,
@@ -42,9 +41,9 @@ export const confirmRideService = async (
       "The origin and destination addresses cannot be the same."
     );
   }
-  let drivers: Driver[] = [];
+  let drivers: IDriver[] = [];
   try {
-    drivers = await getAllDrivers();
+    drivers = await DriverModel.find();
   } catch (error) {
     throw new Error("Error while fetching drivers:");
   }

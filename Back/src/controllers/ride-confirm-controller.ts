@@ -9,7 +9,7 @@ export const confirmRideController = async (
   try {
     const rideData = req.body;
 
-    const result = await confirmRideService(rideData);
+    await confirmRideService(rideData);
 
     return res.status(200).json({ success: true });
   } catch (error: any) {

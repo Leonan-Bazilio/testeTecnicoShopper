@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import RideForm from "./components/RideForm/RideForm";
-import ConfirmRide from "./components/ConfirmRide/ConfirmRide";
-import RideHistory from "./components/RideHistory/RideHistory";
+import RideForm from "./pages/RideForm/RideForm";
+import ConfirmRide from "./pages/ConfirmRide/ConfirmRide";
+import RideHistory from "./pages/RideHistory/RideHistory";
 
 const App = () => {
   return (

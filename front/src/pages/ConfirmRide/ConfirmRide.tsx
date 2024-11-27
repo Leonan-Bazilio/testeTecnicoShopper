@@ -44,11 +44,11 @@ const ConfirmRide: React.FC = () => {
     const { startLocation, endLocation } = rideData.routeResponse;
     const apiKey = process.env.GOOGLE_API_KEY;
     return `https://maps.googleapis.com/maps/api/staticmap?size=600x300&maptype=roadmap
-&markers=color:red|label:A|${startLocation.latLng.latitude},${startLocation.latLng.longitude}
-&markers=color:blue|label:B|${endLocation.latLng.latitude},${endLocation.latLng.longitude}
-&path=color:0x0000ff|weight:5|${startLocation.latLng.latitude},${startLocation.latLng.longitude}
-|${endLocation.latLng.latitude},${endLocation.latLng.longitude}
-&key=${apiKey}`;
+    &markers=color:red|label:A|${startLocation.latLng.latitude},${startLocation.latLng.longitude}
+    &markers=color:blue|label:B|${endLocation.latLng.latitude},${endLocation.latLng.longitude}
+    &path=color:0x0000ff|weight:5|${startLocation.latLng.latitude},${startLocation.latLng.longitude}
+    |${endLocation.latLng.latitude},${endLocation.latLng.longitude}
+    &key=${apiKey}`;
   };
 
   return (
