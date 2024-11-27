@@ -15,7 +15,8 @@ services:
       context: ./front
       dockerfile: Dockerfile
     ports:
-      - "80:4173"  # Mapeia a porta do container para a porta 80 do host
+      - "80:80"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY} # Variável de ambiente
     depends_on:
       - backend
-    restart: unless-stopped

@@ -1,35 +1,27 @@
-# Use a imagem oficial do Node.js como base para construir o frontend
-FROM node:18 AS build
-
-# Defina o diretório de trabalho dentro do container
-WORKDIR /usr/src/app
-
-# Copie os arquivos package.json e package-lock.json
-COPY package*.json ./
-
-# Instale as dependências
-RUN npm install
-
-# Copie o restante do código do frontend
-COPY . .
-
-# Construa a aplicação
-RUN npm run build
-
-# Use a imagem do Node.js para rodar o servidor de preview do Vite
-FROM node:18
+# Etapa de construção
+FROM node:18-alpine AS build
 
 # Defina o diretório de trabalho
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copie os arquivos de build para o diretório de trabalho
-COPY --from=build /usr/src/app/dist /usr/src/app/dist
+# Copie os arquivos necessários
+COPY package.json package-lock.json ./
+COPY tsconfig.json ./
+COPY vite.config.ts ./
 
-# Instale o Vite novamente para rodar o servidor
-RUN npm install -g vite
+# Instale as dependências e construa o projeto
+RUN npm install
+COPY . .
+RUN npm run build
 
-# Exponha a porta 4173 (padrão do Vite)
-EXPOSE 4173
+# Etapa de execução
+FROM nginx:alpine
 
-# Comando para rodar o servidor de preview do Vite
-CMD ["vite", "preview", "--port", "4173", "--host"]
+# Copie o build para o servidor NGINX
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Exponha a porta 80
+EXPOSE 80
+
+# Execute o NGINX
+CMD ["nginx", "-g", "daemon off;"]
