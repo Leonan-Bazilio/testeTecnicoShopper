@@ -16,14 +16,20 @@ COPY . .
 # Construa a aplicação
 RUN npm run build
 
-# Use uma imagem Nginx para servir o frontend
-FROM nginx:1.25
+# Use a imagem do Node.js para rodar o servidor de preview do Vite
+FROM node:18
 
-# Copie os arquivos de build para o Nginx
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+# Defina o diretório de trabalho
+WORKDIR /usr/src/app
 
-# Exponha a porta 80
-EXPOSE 80
+# Copie os arquivos de build para o diretório de trabalho
+COPY --from=build /usr/src/app/dist /usr/src/app/dist
 
-# Inicie o servidor Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Instale o Vite novamente para rodar o servidor
+RUN npm install -g vite
+
+# Exponha a porta 4173 (padrão do Vite)
+EXPOSE 4173
+
+# Comando para rodar o servidor de preview do Vite
+CMD ["vite", "preview", "--port", "4173", "--host"]

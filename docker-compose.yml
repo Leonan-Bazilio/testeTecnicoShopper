@@ -15,7 +15,7 @@ services:
       context: ./front
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "80:4173"  # Mapeia a porta do container para a porta 80 do host
     depends_on:
       - backend
     restart: unless-stopped
