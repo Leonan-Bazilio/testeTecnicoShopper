@@ -1,15 +1,13 @@
 services:
   backend:
     build:
-      context: ./back
+      context: ./Back
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
       - NODE_ENV=production
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-    volumes:
-      - ./back:/usr/src/app
     restart: unless-stopped
 
   frontend:
