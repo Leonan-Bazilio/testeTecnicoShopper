@@ -7,4 +7,7 @@ export default defineConfig({
   server: {
     port: 80,
   },
+  define: {
+    "process.env.GOOGLE_API_KEY": JSON.stringify(process.env.GOOGLE_API_KEY),
+  },
 });

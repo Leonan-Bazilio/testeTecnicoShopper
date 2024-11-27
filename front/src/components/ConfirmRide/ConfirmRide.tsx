@@ -42,7 +42,7 @@ const ConfirmRide: React.FC = () => {
 
   const generateMapUrl = () => {
     const { startLocation, endLocation } = rideData.routeResponse;
-    const apiKey = "AIzaSyAMBDwX4R0VnSELwWAGbliA05MtpURREn0";
+    const apiKey = process.env.GOOGLE_API_KEY;
     return `https://maps.googleapis.com/maps/api/staticmap?size=600x300&maptype=roadmap
 &markers=color:red|label:A|${startLocation.latLng.latitude},${startLocation.latLng.longitude}
 &markers=color:blue|label:B|${endLocation.latLng.latitude},${endLocation.latLng.longitude}
@@ -78,7 +78,10 @@ const ConfirmRide: React.FC = () => {
               <p>
                 <strong>Valor:</strong> R$ {(option.value / 100).toFixed(2)}
               </p>
-              <button onClick={() => handleConfirmRide(option)} disabled={loading}>
+              <button
+                onClick={() => handleConfirmRide(option)}
+                disabled={loading}
+              >
                 Escolher
               </button>
             </div>
