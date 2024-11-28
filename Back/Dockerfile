@@ -1,28 +1,23 @@
 # Use a imagem oficial do Node.js como base
 FROM node:18
 
-# Defina o diretório de trabalho dentro do container
-WORKDIR /usr/src/app
+# Defina um diretório de trabalho diferente, se preferir
+WORKDIR /app
 
-# Copie os arquivos package.json e package-lock.json
-COPY package*.json ./
+# Copie os arquivos necessários para instalar dependências
+COPY package.json package-lock.json ./
 
-# Instale as dependências
-RUN npm install
+# Instale as dependências (runtime somente, sem devDependencies)
+RUN npm install --production
 
-# Copie o restante do código do backend
+# Copie o restante do código para o container
 COPY . .
 
 # Compile o TypeScript
 RUN npm run dist
 
-# Exponha a porta 8080
+# Exponha a porta
 EXPOSE 8080
 
-# Defina as variáveis de ambiente no container
-ENV DB_USER=${DB_USER}
-ENV DB_PASS=${DB_PASS}
-ENV GOOGLE_API_KEY=${GOOGLE_API_KEY}
-
 # Inicie a aplicação
-CMD ["npm", "run", "start:dist"]
+CMD ["node", "dist/server.js"]

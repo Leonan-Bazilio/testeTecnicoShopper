@@ -4,6 +4,10 @@
     "module": "CommonJS",
     "outDir": "./dist",
     "strict": true,
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "skipLibCheck": true, // Ignora verificações desnecessárias em libs
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"], // Garante que apenas "src" será compilado
+  "exclude": ["node_modules", "dist"] // Evita que Node ou saída sejam reprocessados
 }

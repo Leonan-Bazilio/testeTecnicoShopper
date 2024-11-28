@@ -1,29 +1,27 @@
-# Use a imagem oficial do Node.js como base para construir o frontend
-FROM node:18 AS build
+# Etapa de construção
+FROM node:18-alpine AS build
 
-# Defina o diretório de trabalho dentro do container
-WORKDIR /usr/src/app
+# Defina o diretório de trabalho
+WORKDIR /app
 
-# Copie os arquivos package.json e package-lock.json
-COPY package*.json ./
+# Copie os arquivos necessários
+COPY package.json package-lock.json ./
+COPY tsconfig.json ./
+COPY vite.config.ts ./
 
-# Instale as dependências
+# Instale as dependências e construa o projeto
 RUN npm install
-
-# Copie o restante do código do frontend
 COPY . .
-
-# Construa a aplicação
 RUN npm run build
 
-# Use uma imagem Nginx para servir o frontend
-FROM nginx:1.25
+# Etapa de execução
+FROM nginx:alpine
 
-# Copie os arquivos de build para o Nginx
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+# Copie o build para o servidor NGINX
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Exponha a porta 80
 EXPOSE 80
 
-# Inicie o servidor Nginx
+# Execute o NGINX
 CMD ["nginx", "-g", "daemon off;"]
