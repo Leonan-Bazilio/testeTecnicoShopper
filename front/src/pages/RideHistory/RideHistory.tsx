@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-import styles from "./RideHistory.module.css"; // Importação como módulo CSS
+import styles from "./RideHistory.module.css";
 
 interface Driver {
   id: number;
@@ -32,8 +32,9 @@ const RideHistory: React.FC = () => {
   const [driverId, setDriverId] = useState<number | string>("all");
   const [rides, setRides] = useState<Ride[]>([]);
   const [filteredRides, setFilteredRides] = useState<Ride[]>([]);
-
   const [drivers, setDrivers] = useState<Driver[]>([]);
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const extractDriversFromRides = (rides: Ride[]) => {
     const uniqueDrivers: number[] = [];
@@ -47,20 +48,24 @@ const RideHistory: React.FC = () => {
     });
     setDrivers(driversList);
   };
+
   const filterRides = () => {
-    if (driverId == "all") {
+    if (driverId === "all") {
       setFilteredRides(rides);
       return;
     }
-    const filtered = rides.filter((ride) => ride.driver.id == driverId);
+    const filtered = rides.filter((ride) => ride.driver.id === driverId);
     setFilteredRides(filtered);
   };
+
   useEffect(() => {
     filterRides();
   }, [driverId, rides]);
 
   const fetchRides = async () => {
     if (!customerId) return;
+
+    setErrorMessage(null);
 
     try {
       const response = await axios.get<RideHistoryData>(
@@ -75,8 +80,11 @@ const RideHistory: React.FC = () => {
       extractDriversFromRides(response.data.rides.rides);
       setDriverId("all");
     } catch (error: any) {
-      console.error("Erro ao buscar histórico de viagens:", error);
-      alert("Erro ao buscar histórico de viagens.");
+      setRides([]);
+      setErrorMessage(
+        error?.response?.data?.error_description ||
+          "Erro ao buscar histórico de viagens. Tente novamente."
+      );
     }
   };
 
@@ -119,6 +127,12 @@ const RideHistory: React.FC = () => {
           </button>
         </div>
 
+        {errorMessage && (
+          <div className={styles.errorMessage}>
+            <p>{errorMessage}</p>
+          </div>
+        )}
+
         <div>
           {filteredRides.length > 0 ? (
             <ul className={styles.rideList}>
@@ -144,7 +158,7 @@ const RideHistory: React.FC = () => {
                     <strong>Tempo:</strong> {ride.duration}
                   </div>
                   <div>
-                    <strong>Valor:</strong> R${ride.value.toFixed(2)}
+                    <strong>Valor:</strong> R${(ride.value / 100).toFixed(2)}
                   </div>
                 </li>
               ))}

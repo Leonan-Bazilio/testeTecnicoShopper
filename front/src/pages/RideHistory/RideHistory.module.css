@@ -106,3 +106,17 @@
   font-size: 1.2rem;
   font-weight: bold;
 }
+.errorMessage {
+  background-color: #ff4252;
+  color: black;
+  border: 1px solid #ff3f52;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: fit-content;
+  align-self: center;
+}

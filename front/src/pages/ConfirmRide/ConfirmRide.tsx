@@ -8,9 +8,12 @@ const ConfirmRide: React.FC = () => {
   const { rideData, customerId, origin, destination } = state;
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleConfirmRide = async (driver: any) => {
     setLoading(true);
+    setErrorMessage(null);
+
     try {
       const payload = {
         customer_id: customerId,
@@ -32,9 +35,10 @@ const ConfirmRide: React.FC = () => {
         state: { customer_id: customerId },
       });
     } catch (error: any) {
-      alert(
-        error.response?.data?.error_description || "Erro ao confirmar a viagem."
-      );
+      const errorResponse = error.response?.data;
+      const customErrorMessage =
+        errorResponse?.error_description || "Erro ao confirmar a viagem.";
+      setErrorMessage(customErrorMessage);
     } finally {
       setLoading(false);
     }
@@ -42,7 +46,7 @@ const ConfirmRide: React.FC = () => {
 
   const generateMapUrl = () => {
     const { startLocation, endLocation } = rideData.routeResponse;
-    const apiKey = process.env.GOOGLE_API_KEY;
+    const apiKey = import.meta.env?.GOOGLE_API_KEY;
     return `https://maps.googleapis.com/maps/api/staticmap?size=600x300&maptype=roadmap
     &markers=color:red|label:A|${startLocation.latLng.latitude},${startLocation.latLng.longitude}
     &markers=color:blue|label:B|${endLocation.latLng.latitude},${endLocation.latLng.longitude}
@@ -55,6 +59,13 @@ const ConfirmRide: React.FC = () => {
     <div className={styles.background}>
       <div className={styles.container}>
         <h1>Confirmar Viagem</h1>
+
+        {errorMessage && (
+          <div className={styles.errorMessage}>
+            <p>{errorMessage}</p>
+          </div>
+        )}
+
         <div className={styles.divMap}>
           <h2>Mapa da Rota</h2>
           <img src={generateMapUrl()} alt="Mapa da rota" />

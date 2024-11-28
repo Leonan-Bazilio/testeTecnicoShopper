@@ -22,6 +22,7 @@ const RideForm: React.FC = () => {
   const [destinationPostalCode, setDestinationPostalCode] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("");
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const formatAddress = (
@@ -46,6 +47,8 @@ const RideForm: React.FC = () => {
   };
 
   const handleEstimate = async () => {
+    setErrorMessage(null);
+
     try {
       const origin = formatAddress(
         originStreet,
@@ -77,9 +80,10 @@ const RideForm: React.FC = () => {
         state: { rideData: response.data, customerId, origin, destination },
       });
     } catch (error: any) {
-      alert(
-        error.response?.data?.error_description || "Erro ao estimar viagem."
-      );
+      const errorResponse = error.response?.data;
+      const customErrorMessage =
+        errorResponse?.error_description || "Erro ao estimar viagem.";
+      setErrorMessage(customErrorMessage);
     }
   };
 
@@ -194,6 +198,12 @@ const RideForm: React.FC = () => {
             />
           </div>
         </div>
+
+        {errorMessage && (
+          <div className={styles.errorMessage}>
+            <p>{errorMessage}</p>
+          </div>
+        )}
 
         <button onClick={handleEstimate}>Estimar Viagem</button>
       </div>
